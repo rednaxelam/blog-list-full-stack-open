@@ -23,3 +23,19 @@ describe('total likes', () => {
   })
 
 })
+
+describe('favorite blog', () => {
+
+  test('Of empty blog list is null', () => {
+    expect(listHelper.favoriteBlog([])).toBe(null)
+  })
+
+  test('Of blog list with only one blog post is that blog post', () => {
+    expect(listHelper.favoriteBlog(listWithOneBlog)).toEqual(listWithOneBlog[0])
+  })
+
+  test('Of a larger blog list returns the most liked blog post', () => {
+    expect(listHelper.favoriteBlog(blogs)).toEqual(blogs[2])
+  })
+
+})
