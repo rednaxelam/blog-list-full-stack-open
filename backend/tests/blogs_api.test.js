@@ -32,6 +32,13 @@ test('Get request to /api/blogs will return all elements of the collection in th
   }
 })
 
+test('Returned blogs have a property named "id"', async () => {
+  let returnedBlogList = await api.get('/api/blogs')
+  for (let i = 0; i < returnedBlogList.length; i++) {
+    expect(returnedBlogList[i].id).toBeDefined()
+  }
+})
+
 afterAll( async () => {
   await mongoose.connection.close()
 })
