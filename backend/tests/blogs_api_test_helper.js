@@ -15,4 +15,11 @@ const blogObjectArray = [
   }
 ]
 
-module.exports = { blogObjectArray }
+const blogObjectSingle = {
+  title: 'Luv me blogs',
+  author: 'Greg',
+  url: 'Dummy URL: Three Times a Charm',
+  likes: 53
+}
+
+module.exports = { blogObjectArray, blogObjectSingle }
