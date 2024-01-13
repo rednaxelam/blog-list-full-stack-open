@@ -28,4 +28,22 @@ const blogObjectWithoutLikes = {
   url: 'Dummy URL: I can\'t use punctuation properly'
 }
 
-module.exports = { blogObjectArray, blogObjectSingle, blogObjectWithoutLikes }
+const blogObjectWithoutURL = {
+  title: 'I dislike people who don\'t enter data correctly',
+  author: 'AI Machine Data Scientist (Actually Data Analyst)',
+  likes: 2
+}
+
+const blogObjectWithoutTitle = {
+  author: 'Luka Tim',
+  url: 'Dummy URL: Another One',
+  likes: 22
+}
+
+module.exports = {
+  blogObjectArray,
+  blogObjectSingle,
+  blogObjectWithoutLikes,
+  blogObjectWithoutURL,
+  blogObjectWithoutTitle,
+}

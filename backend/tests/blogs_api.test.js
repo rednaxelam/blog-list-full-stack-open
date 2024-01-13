@@ -3,7 +3,11 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-const { blogObjectArray, blogObjectSingle, blogObjectWithoutLikes } = require('./blogs_api_test_helper')
+const { blogObjectArray,
+  blogObjectSingle,
+  blogObjectWithoutLikes,
+  blogObjectWithoutTitle,
+  blogObjectWithoutURL } = require('./blogs_api_test_helper')
 
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl)
@@ -35,7 +39,7 @@ test('Get request to /api/blogs will return all elements of the collection in th
 })
 
 test('Returned blogs have a property named "id"', async () => {
-  let returnedBlogListPromise = await api.get('/api/blogs')
+  const returnedBlogListPromise = await api.get('/api/blogs')
   const returnedBlogList = returnedBlogListPromise.body
 
   for (let i = 0; i < returnedBlogList.length; i++) {
@@ -67,6 +71,23 @@ test('If the likes property is missing from a post request, it will default to 0
   const returnedBlog = returnedBlogPromise.body
 
   expect(returnedBlog.likes).toBe(0)
+})
+
+test('If the title or url property is missing from the post request data, there will be a 400 response', async () => {
+  await api
+    .post('/api/blogs')
+    .send(blogObjectWithoutTitle)
+    .expect(400)
+
+  await api
+    .post('/api/blogs')
+    .send(blogObjectWithoutURL)
+    .expect(400)
+
+  const returnedBlogListPromise = await api.get('/api/blogs')
+  const returnedBlogList = returnedBlogListPromise.body
+
+  expect(returnedBlogList).toHaveLength(blogObjectArray.length)
 })
 
 afterAll( async () => {
