@@ -40,10 +40,26 @@ const blogObjectWithoutTitle = {
   likes: 22
 }
 
+const dummyBlogObject = {
+  title: 'example text',
+  author: 'example text',
+  url: 'example text',
+  likes: 0
+}
+
+const nonExistingID = async () => {
+  const blog = new Blog(dummyBlogObject)
+  const returnedBlog = await blog.save()
+
+  await Blog.findByIdAndDelete(returnedBlog._id)
+  return returnedBlog._id
+}
+
 module.exports = {
   blogObjectArray,
   blogObjectSingle,
   blogObjectWithoutLikes,
   blogObjectWithoutURL,
   blogObjectWithoutTitle,
+  nonExistingID,
 }

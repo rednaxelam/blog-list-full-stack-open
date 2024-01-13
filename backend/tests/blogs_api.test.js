@@ -7,7 +7,8 @@ const { blogObjectArray,
   blogObjectSingle,
   blogObjectWithoutLikes,
   blogObjectWithoutTitle,
-  blogObjectWithoutURL } = require('./blogs_api_test_helper')
+  blogObjectWithoutURL,
+  nonExistingID, } = require('./blogs_api_test_helper')
 
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl)
@@ -89,6 +90,39 @@ test('If the title or url property is missing from the post request data, there 
 
   expect(returnedBlogList).toHaveLength(blogObjectArray.length)
 })
+
+describe('resource deletion', () => {
+  test('Delete request with document id removes document from database and returns 204', async () => {
+    const beforeReturnedBlogListPromise = await api.get('/api/blogs')
+    const beforeReturnedBlogList = beforeReturnedBlogListPromise.body
+    const returnedBlogToDelete = beforeReturnedBlogList[0]
+    await api
+      .delete(`/api/blogs/${returnedBlogToDelete.id}`)
+      .expect(204)
+
+    const afterReturnedBlogListPromise = await api.get('/api/blogs')
+    const afterReturnedBlogList = afterReturnedBlogListPromise.body
+
+    expect(afterReturnedBlogList).toHaveLength(beforeReturnedBlogList.length - 1)
+    expect(afterReturnedBlogList.map(blog => blog.id)).not.toContain(returnedBlogToDelete.id)
+  })
+  test('Delete request for nonexistent document removes nothing and returns 204', async () => {
+    const beforeReturnedBlogListPromise = await api.get('/api/blogs')
+    const beforeBlogList = beforeReturnedBlogListPromise.body
+
+    const nonexistentID = await nonExistingID()
+
+    await api
+      .delete(`/api/blogs/${nonexistentID}`)
+      .expect(204)
+
+    const afterReturnedBlogListPromise = await api.get('/api/blogs')
+    const afterBlogList = afterReturnedBlogListPromise.body
+
+    expect(beforeBlogList).toHaveLength(afterBlogList.length)
+  })
+})
+
 
 afterAll( async () => {
   await mongoose.connection.close()
