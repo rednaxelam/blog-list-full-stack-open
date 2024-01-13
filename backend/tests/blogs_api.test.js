@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-const { blogObjectArray, blogObjectSingle } = require('./blogs_api_test_helper')
+const { blogObjectArray, blogObjectSingle, blogObjectWithoutLikes } = require('./blogs_api_test_helper')
 
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl)
@@ -60,6 +60,13 @@ test('Well formed Post request to /api/blogs will successfully create a new blog
   let returnedBlogListPromise = await api.get('/api/blogs')
   const returnedBlogList = returnedBlogListPromise.body
   expect(returnedBlogList).toHaveLength(blogObjectArray.length + 1)
+})
+
+test('If the likes property is missing from a post request, it will default to 0', async () => {
+  const returnedBlogPromise = await api.post('/api/blogs').send(blogObjectWithoutLikes)
+  const returnedBlog = returnedBlogPromise.body
+
+  expect(returnedBlog.likes).toBe(0)
 })
 
 afterAll( async () => {
