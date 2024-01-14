@@ -30,4 +30,24 @@ blogsRouter.delete('/:id', async (request, response) => {
   response.status(204).end()
 })
 
+blogsRouter.put('/:id', async (request, response) => {
+  if (!Object.hasOwn(request.body, 'title')) {
+    response.status(400).json({ error: 'title missing' })
+    return
+  } else if (!Object.hasOwn(request.body, 'url')) {
+    response.status(400).json({ error: 'url missing' })
+    return
+  }
+
+  const blogsWithID = await Blog.find({ _id: request.params.id }).exec()
+  if (blogsWithID.length < 1) {
+    response.status(404).json({ error: 'blog not found' })
+    return
+  }
+
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true, runValidators: true, context: 'query' })
+
+  response.json(updatedBlog)
+})
+
 module.exports = blogsRouter

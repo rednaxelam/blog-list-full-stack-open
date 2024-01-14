@@ -5,15 +5,22 @@ const app = require('../app')
 const Blog = require('../models/blog')
 const { blogObjectArray,
   blogObjectSingle,
+  blogObjectUpdated,
   blogObjectWithoutLikes,
   blogObjectWithoutTitle,
   blogObjectWithoutURL,
+  dummyBlogObject,
   nonExistingID, } = require('./blogs_api_test_helper')
 
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl)
 
 const api = supertest(app)
+
+const getBlogList = async () => {
+  const returnedBlogListPromise = await api.get('/api/blogs')
+  return returnedBlogListPromise.body
+}
 
 beforeEach( async () => {
   await Blog.deleteMany({})
@@ -91,7 +98,7 @@ test('If the title or url property is missing from the post request data, there 
   expect(returnedBlogList).toHaveLength(blogObjectArray.length)
 })
 
-describe('resource deletion', () => {
+describe('blog deletion', () => {
   test('Delete request with document id removes document from database and returns 204', async () => {
     const beforeReturnedBlogListPromise = await api.get('/api/blogs')
     const beforeReturnedBlogList = beforeReturnedBlogListPromise.body
@@ -123,6 +130,45 @@ describe('resource deletion', () => {
   })
 })
 
+describe('blog modification', () => {
+  test('Valid PUT request updates blog', async () => {
+    const beforeBlogList = await getBlogList()
+
+    const updatedBlogPostPromise = await api
+      .put(`/api/blogs/${beforeBlogList[0].id}`)
+      .send(blogObjectUpdated)
+      .expect(200)
+
+    const afterBlogList = await getBlogList()
+
+    expect(beforeBlogList).toHaveLength(afterBlogList.length)
+    expect(beforeBlogList[0]).not.toEqual(updatedBlogPostPromise.body)
+    expect(afterBlogList[0]).toEqual(updatedBlogPostPromise.body)
+  })
+  test('PUT request with invalid body returns a 400 response', async () => {
+    const beforeBlogList = await getBlogList()
+
+    await api
+      .put(`/api/blogs/${beforeBlogList[0].id}`)
+      .send(blogObjectWithoutTitle)
+      .expect(400)
+
+    await api
+      .put(`/api/blogs/${beforeBlogList[0].id}`)
+      .send(blogObjectWithoutURL)
+      .expect(400)
+  })
+  test('PUT request for nonexistent object returns a 404 response', async () => {
+    const nonexistentID = await nonExistingID()
+
+    await api
+      .put(`/api/blogs/${nonexistentID.toString()}`)
+      .send(dummyBlogObject)
+      .expect(404)
+
+
+  })
+})
 
 afterAll( async () => {
   await mongoose.connection.close()

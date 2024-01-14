@@ -15,6 +15,13 @@ const blogObjectArray = [
   }
 ]
 
+const blogObjectUpdated = {
+  title: 'Blogs are good in and of themselves',
+  author: 'Bob',
+  url: 'Dummy URL',
+  likes: 4,
+}
+
 const blogObjectSingle = {
   title: 'Luv me blogs',
   author: 'Greg',
@@ -57,9 +64,11 @@ const nonExistingID = async () => {
 
 module.exports = {
   blogObjectArray,
+  blogObjectUpdated,
   blogObjectSingle,
   blogObjectWithoutLikes,
   blogObjectWithoutURL,
   blogObjectWithoutTitle,
+  dummyBlogObject,
   nonExistingID,
 }
