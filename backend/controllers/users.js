@@ -8,6 +8,12 @@ usersRouter.post('/', async (req, res) => {
   if (!username || !password) {
     res.status(400).send({ error: 'missing username or password' })
     return
+  } else if (username.length < 3) {
+    res.status(400).send({ error: 'username must be at least 3 characters long' })
+    return
+  } else if (password.length < 3) {
+    res.status(400).send({ error: 'password must be at least 3 characters long' })
+    return
   }
 
   const passwordHash = await bcrypt.hash(password, 10)
@@ -20,7 +26,7 @@ usersRouter.post('/', async (req, res) => {
 
   const returnedUser = await user.save()
 
-  res.json(returnedUser)
+  res.status(201).json(returnedUser)
 })
 
 usersRouter.get('/', async (req, res) => {
