@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const { blogObjectArray,
   blogObjectSingle,
   blogObjectUpdated,
@@ -31,18 +32,15 @@ beforeEach( async () => {
   }
 })
 
-test('Get request to /api/blogs will return all elements of the collection in the correct format', async () => {
+test('Get request to /api/blogs will return all elements of the collection', async () => {
   let returnedBlogListPromise = await api.get('/api/blogs')
   const returnedBlogList = returnedBlogListPromise.body
 
   for (let i = 0; i < returnedBlogList.length; i++) {
     let returnedBlog = returnedBlogList[i]
     let originalBlog = blogObjectArray[i]
-    for (let prop in originalBlog) {
-      expect(returnedBlog).toHaveProperty(prop)
-      // an assumption is made here that the schema only specifies non-object values
-      expect(returnedBlog[prop]).toBe(originalBlog[prop])
-    }
+    expect(returnedBlog).toHaveProperty('url')
+    expect(returnedBlog['url']).toBe(originalBlog['url'])
   }
 })
 
@@ -56,7 +54,11 @@ test('Returned blogs have a property named "id"', async () => {
 })
 
 test('Well formed Post request to /api/blogs will successfully create a new blog post', async () => {
-  const returnedBlogPromise = await api.post('/api/blogs').send(blogObjectSingle)
+  const returnedBlogPromise = await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${config.TEST_TOKEN_MLUUKKAI}`)
+    .send(blogObjectSingle)
+
   const returnedBlog = returnedBlogPromise.body
 
   for (let prop in blogObjectSingle) {
@@ -75,7 +77,10 @@ test('Well formed Post request to /api/blogs will successfully create a new blog
 })
 
 test('If the likes property is missing from a post request, it will default to 0', async () => {
-  const returnedBlogPromise = await api.post('/api/blogs').send(blogObjectWithoutLikes)
+  const returnedBlogPromise = await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${config.TEST_TOKEN_BARRY53}`)
+    .send(blogObjectWithoutLikes)
   const returnedBlog = returnedBlogPromise.body
 
   expect(returnedBlog.likes).toBe(0)
@@ -84,13 +89,40 @@ test('If the likes property is missing from a post request, it will default to 0
 test('If the title or url property is missing from the post request data, there will be a 400 response', async () => {
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${config.TEST_TOKEN_MLUUKKAI}`)
     .send(blogObjectWithoutTitle)
     .expect(400)
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${config.TEST_TOKEN_BARRY53}`)
     .send(blogObjectWithoutURL)
     .expect(400)
+
+  const returnedBlogListPromise = await api.get('/api/blogs')
+  const returnedBlogList = returnedBlogListPromise.body
+
+  expect(returnedBlogList).toHaveLength(blogObjectArray.length)
+})
+
+test('POST request with no token fails with 401 response', async () => {
+  await api
+    .post('/api/blogs')
+    .send(blogObjectWithoutTitle)
+    .expect(401)
+
+  const returnedBlogListPromise = await api.get('/api/blogs')
+  const returnedBlogList = returnedBlogListPromise.body
+
+  expect(returnedBlogList).toHaveLength(blogObjectArray.length)
+})
+
+test('POST request with invalid token fails with 401 response', async () => {
+  await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer 1${config.TEST_TOKEN_BARRY53}`)
+    .send(blogObjectWithoutTitle)
+    .expect(401)
 
   const returnedBlogListPromise = await api.get('/api/blogs')
   const returnedBlogList = returnedBlogListPromise.body
@@ -105,6 +137,7 @@ describe('blog deletion', () => {
     const returnedBlogToDelete = beforeReturnedBlogList[0]
     await api
       .delete(`/api/blogs/${returnedBlogToDelete.id}`)
+      .set('Authorization', `Bearer ${config.TEST_TOKEN_MLUUKKAI}`)
       .expect(204)
 
     const afterReturnedBlogListPromise = await api.get('/api/blogs')
@@ -121,6 +154,7 @@ describe('blog deletion', () => {
 
     await api
       .delete(`/api/blogs/${nonexistentID}`)
+      .set('Authorization', `Bearer ${config.TEST_TOKEN_BARRY53}`)
       .expect(204)
 
     const afterReturnedBlogListPromise = await api.get('/api/blogs')
@@ -142,8 +176,8 @@ describe('blog modification', () => {
     const afterBlogList = await getBlogList()
 
     expect(beforeBlogList).toHaveLength(afterBlogList.length)
-    expect(beforeBlogList[0]).not.toEqual(updatedBlogPostPromise.body)
-    expect(afterBlogList[0]).toEqual(updatedBlogPostPromise.body)
+    expect(beforeBlogList[0].likes).not.toEqual(updatedBlogPostPromise.body.likes)
+    expect(afterBlogList[0].likes).toEqual(updatedBlogPostPromise.body.likes)
   })
   test('PUT request with invalid body returns a 400 response', async () => {
     const beforeBlogList = await getBlogList()

@@ -6,12 +6,14 @@ const blogObjectArray = [
     author: 'Bob',
     url: 'Dummy URL',
     likes: 3,
+    user: '65a8086418f4006bf2daa9ab',
   },
   {
     title: 'Blogs are inferior to books',
     author: 'Jim',
     url: 'Dummy URL: The Sequel',
     likes: 7,
+    user: '65a8086418f4006bf2daa9ac',
   }
 ]
 

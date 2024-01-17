@@ -36,6 +36,10 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id)
 
+  if (!blog) {
+    return response.status(204).json({ warning: 'no blog was found with given id' })
+  }
+
   if (request.userId !== blog.user.toString()) {
     return response.status(401)
       .json({ error: 'delete request unauthorized - only the user who added the blog entry can delete it' })
