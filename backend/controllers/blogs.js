@@ -1,7 +1,7 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
-const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
   let blogs = await Blog.find({}).populate('user', { blogs: 0 })
@@ -9,14 +9,10 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const blogObject = request.body
 
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
+  const user = await User.findById(request.userId)
 
   if (!Object.hasOwn(blogObject, 'title')) {
     response.status(400).json({ error: 'title missing' })
@@ -37,19 +33,10 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(result)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  if (request.token === null) {
-    return response.status(401).json({ error: 'token not attached to request' })
-  }
-
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'invalid token' })
-  }
-
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id)
 
-  if (decodedToken.id.toString() !== blog.user.toString()) {
+  if (request.userId !== blog.user.toString()) {
     return response.status(401)
       .json({ error: 'delete request unauthorized - only the user who added the blog entry can delete it' })
   }
@@ -57,9 +44,6 @@ blogsRouter.delete('/:id', async (request, response) => {
   await blog.deleteOne()
 
   response.status(204).end()
-  // await Blog.findByIdAndDelete(request.params.id)
-
-  // response.status(204).end()
 })
 
 blogsRouter.put('/:id', async (request, response) => {
