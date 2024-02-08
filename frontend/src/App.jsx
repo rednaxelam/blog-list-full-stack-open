@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import BlogList from './components/BlogList'
+import BlogForm from './components/BlogForm'
 import LogInForm from './components/LogInForm'
 import blogService from './services/blogs'
 
@@ -11,7 +12,9 @@ const App = () => {
   useEffect(() => {
     const savedUser = window.localStorage.getItem('loggedUser')
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
+      const currentUser = JSON.parse(savedUser)
+      setUser(currentUser)
+      blogService.setToken(currentUser.token)
     }
   }, [])
 
@@ -20,8 +23,10 @@ const App = () => {
       blogService.getAll().then(blogs => {
         setBlogs(blogs)
       })
+      blogService.setToken(user.token)
     } else {
       setBlogs([])
+      blogService.removeToken()
     }
   }, [user])
 
@@ -40,6 +45,7 @@ const App = () => {
       return <>
         <h2>blogs</h2>
         <p>{user.name} logged in <button onClick={() => logOut()}>Log Out</button></p>
+        <BlogForm setBlogs={setBlogs} setErrorMessage={setErrorMessage} />
         <BlogList blogs={blogs} />
       </>
     }
