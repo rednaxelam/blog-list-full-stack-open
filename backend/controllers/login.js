@@ -10,6 +10,7 @@ loginRouter.post('/', async (request, response) => {
 
   if (!userInDB) {
     response.status(401).json({ error: 'user does not exist' })
+    return
   }
 
   const passwordCorrect = await bcrypt.compare(password, userInDB.passwordHash)
