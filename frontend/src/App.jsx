@@ -24,6 +24,11 @@ const App = () => {
       setBlogs([])
     }
   }, [user])
+
+  const logOut = () => {
+    setUser(null)
+    window.localStorage.removeItem('loggedUser')
+  }
   
   const setDisplay = () => {
     if (user === null) {
@@ -34,7 +39,7 @@ const App = () => {
     } else {
       return <>
         <h2>blogs</h2>
-        <p>{user.name} logged in </p>
+        <p>{user.name} logged in <button onClick={() => logOut()}>Log Out</button></p>
         <BlogList blogs={blogs} />
       </>
     }
