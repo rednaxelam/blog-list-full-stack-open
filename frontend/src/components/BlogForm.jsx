@@ -18,7 +18,7 @@ const TextualInput = ({nom, state, stateUpdater}) => {
   </div>
 }
 
-const BlogForm = ({ setBlogs, setErrorMessage }) => {
+const BlogForm = ({ setBlogs, setOutcomeMessage }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -31,11 +31,12 @@ const BlogForm = ({ setBlogs, setErrorMessage }) => {
       await blogServices.postBlog(blogObject)
       const newBlogList = await blogServices.getAll()
       setBlogs(newBlogList)
+      setOutcomeMessage(['success', `added ${blogObject.title} by ${blogObject.author} to blog list`])
       setTitle('')
       setAuthor('')
       setUrl('')
     } catch (error) {
-      setErrorMessage(error.message)
+      setOutcomeMessage(['failure', error.message])
     }
   }
 

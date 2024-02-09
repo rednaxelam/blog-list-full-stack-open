@@ -1,7 +1,7 @@
 import { useState } from "react"
 import loginService from '../services/login'
 
-const LogInForm = ({ setUser, setErrorMessage }) => {
+const LogInForm = ({ setUser, setOutcomeMessage }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -11,9 +11,10 @@ const LogInForm = ({ setUser, setErrorMessage }) => {
     try {
       const user = await loginService.logIn({ username, password })
       setUser(user)
+      setOutcomeMessage(['success', 'Successfully logged in'])
       window.localStorage.setItem('loggedUser', JSON.stringify(user))
     } catch (error) {
-      setErrorMessage('Login Unsuccessful')  
+      setOutcomeMessage(['failure', 'Login Unsuccessful'])
     }
 
     setUsername('')
