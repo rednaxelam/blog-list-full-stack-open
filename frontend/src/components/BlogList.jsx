@@ -1,6 +1,6 @@
 import Blog from "./Blog"
 
-const BlogList = ({ blogs, setBlogs, setOutcomeMessage }) => {
+const BlogList = ({ blogs, setBlogs, setOutcomeMessage, user }) => {
   return (
     <div>
       { blogs.toSorted((blog1, blog2) => blog2.likes - blog1.likes).map(blog => <Blog
@@ -8,6 +8,7 @@ const BlogList = ({ blogs, setBlogs, setOutcomeMessage }) => {
           blog={blog}
           setBlogs={setBlogs}
           setOutcomeMessage={setOutcomeMessage}
+          user={user}
         />) }
     </div>
   )

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, setBlogs, setOutcomeMessage }) => {
+const Blog = ({ blog, setBlogs, setOutcomeMessage, user }) => {
   const [showDetailed, setShowDetailed] = useState(false)
 
   const blogStyle = {
@@ -12,7 +12,7 @@ const Blog = ({ blog, setBlogs, setOutcomeMessage }) => {
     marginBottom: '5px'
   }
 
-  const likePost = async () => {
+  const likeBlog = async () => {
     try {
       const newBlog = {
         title: blog.title,
@@ -29,12 +29,30 @@ const Blog = ({ blog, setBlogs, setOutcomeMessage }) => {
     }
   }
 
+  const deleteBlog = async () => {
+    try {
+      if (user.username !== blog.user.username) {
+        throw new Error('Unauthorized action: Only the creator of an entry may delete it')
+      }
+      if (window.confirm(`Permanently delete entry for ${blog.title} by ${blog.author}?`)) {
+        const successMessage = `entry for ${blog.title} has been successfully deleted`
+        await blogService.deleteBlog(blog.id)
+        const newBlogList = await blogService.getAll()
+        setBlogs(newBlogList)
+        setOutcomeMessage(['success', successMessage])
+      }
+    } catch (error) {
+      setOutcomeMessage(['failure', error.message])
+    }
+  }
+
   if (showDetailed) {
     return <div style={blogStyle}>
       <p>{blog.title} {blog.author} <button onClick={() => setShowDetailed(false)}>hide</button></p>
       <p>{blog.url}</p>
-      <p>likes {blog.likes} <button onClick={() => likePost()}>like</button></p>
+      <p>likes {blog.likes} <button onClick={() => likeBlog()}>like</button></p>
       <p>{blog.user.name}</p>
+      <p><button onClick={() => deleteBlog()}>remove</button></p>
     </div>
   } else {
     return <div style={blogStyle}>
