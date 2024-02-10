@@ -65,7 +65,7 @@ const App = () => {
         <Toggleable label={'add new blog'}>
           <BlogForm setBlogs={setBlogs} setOutcomeMessage={setOutcomeMessage} />
         </Toggleable>
-        <BlogList blogs={blogs} />
+        <BlogList blogs={blogs} setBlogs={setBlogs} setOutcomeMessage={setOutcomeMessage} />
       </>
     }
   }

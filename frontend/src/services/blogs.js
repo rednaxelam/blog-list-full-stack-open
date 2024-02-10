@@ -25,4 +25,13 @@ const postBlog = async (blogObject) => {
   }
 }
 
-export default { setToken, removeToken, getAll, postBlog }
+const updateBlog = async (blogObject, id) => {
+  try {
+    const response = await axios.put(`${baseUrl}/${id}`, blogObject)
+    return response.data
+  } catch (error) {
+    throw new Error(error.response.data.error)
+  }
+}
+
+export default { setToken, removeToken, getAll, postBlog, updateBlog }
