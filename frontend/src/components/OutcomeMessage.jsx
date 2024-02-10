@@ -1,6 +1,6 @@
 const OutcomeMessage = ({ outcomeMessage }) => {
   let style = undefined
-  
+
   if (outcomeMessage[0] === 'success') {
     style = {
       color: 'DarkGreen',

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from 'react'
 import loginService from '../services/login'
 
 const LogInForm = ({ setUser, setOutcomeMessage }) => {
@@ -7,7 +7,7 @@ const LogInForm = ({ setUser, setOutcomeMessage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     try {
       const user = await loginService.logIn({ username, password })
       setUser(user)
@@ -23,12 +23,12 @@ const LogInForm = ({ setUser, setOutcomeMessage }) => {
 
   const handleInputChange = stateUpdater => {
     return ({ target }) => stateUpdater(target.value)
-  } 
+  }
 
   return <form onSubmit={handleSubmit}>
     <div className="form-control">
       <label htmlFor="username">username:</label>
-      <input 
+      <input
         type="text"
         name="username"
         id="username"
@@ -38,7 +38,7 @@ const LogInForm = ({ setUser, setOutcomeMessage }) => {
     </div>
     <div className="form-control">
       <label htmlFor="pwd">password:</label>
-      <input 
+      <input
         type="password"
         name="pwd"
         id="pwd"

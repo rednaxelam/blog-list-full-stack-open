@@ -18,7 +18,7 @@ const getAll = async () => {
 
 const postBlog = async (blogObject) => {
   try {
-    const response = await axios.post(baseUrl, blogObject, {headers: {Authorization: token}})
+    const response = await axios.post(baseUrl, blogObject, { headers: { Authorization: token } })
     return response.data
   } catch (error) {
     throw new Error(error.response.data.error)
@@ -36,7 +36,7 @@ const updateBlog = async (blogObject, id) => {
 
 const deleteBlog = async (id) => {
   try {
-    const response = await axios.delete(`${baseUrl}/${id}`, {headers: {Authorization: token}})
+    const response = await axios.delete(`${baseUrl}/${id}`, { headers: { Authorization: token } })
     return response.data
   } catch (error) {
     throw new Error(error.response.data.error)

@@ -51,7 +51,7 @@ const App = () => {
       return <OutcomeMessage outcomeMessage={outcomeMessage} />
     }
   }
-  
+
   const displayMain = () => {
     if (user === null) {
       return <>

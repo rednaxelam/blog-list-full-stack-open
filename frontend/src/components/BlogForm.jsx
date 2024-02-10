@@ -1,11 +1,11 @@
-import { useState } from "react"
+import { useState } from 'react'
 import blogServices from '../services/blogs'
 
 const handleInputChange = stateUpdater => {
   return ({ target }) => stateUpdater(target.value)
 }
 
-const TextualInput = ({nom, state, stateUpdater}) => {
+const TextualInput = ({ nom, state, stateUpdater }) => {
   return <div className="form-control">
     <label htmlFor={nom}>{nom}:</label>
     <input
@@ -27,7 +27,7 @@ const BlogForm = ({ setBlogs, setOutcomeMessage, setVisibility }) => {
     e.preventDefault()
 
     try {
-      const blogObject = {title, author, url}
+      const blogObject = { title, author, url }
       await blogServices.postBlog(blogObject)
       const newBlogList = await blogServices.getAll()
       setBlogs(newBlogList)
