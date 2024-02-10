@@ -18,7 +18,7 @@ const TextualInput = ({nom, state, stateUpdater}) => {
   </div>
 }
 
-const BlogForm = ({ setBlogs, setOutcomeMessage }) => {
+const BlogForm = ({ setBlogs, setOutcomeMessage, setVisibility }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -32,6 +32,7 @@ const BlogForm = ({ setBlogs, setOutcomeMessage }) => {
       const newBlogList = await blogServices.getAll()
       setBlogs(newBlogList)
       setOutcomeMessage(['success', `added ${blogObject.title} by ${blogObject.author} to blog list`])
+      if (setVisibility) setVisibility(false)
       setTitle('')
       setAuthor('')
       setUrl('')

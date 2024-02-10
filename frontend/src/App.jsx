@@ -3,6 +3,7 @@ import OutcomeMessage from './components/OutcomeMessage'
 import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import LogInForm from './components/LogInForm'
+import Toggleable from './components/Toggleable'
 import blogService from './services/blogs'
 
 const App = () => {
@@ -61,7 +62,9 @@ const App = () => {
       return <>
         <h2>blogs</h2>
         <p>{user.name} logged in <button onClick={() => logOut()}>Log Out</button></p>
-        <BlogForm setBlogs={setBlogs} setOutcomeMessage={setOutcomeMessage} />
+        <Toggleable label={'add new blog'}>
+          <BlogForm setBlogs={setBlogs} setOutcomeMessage={setOutcomeMessage} />
+        </Toggleable>
         <BlogList blogs={blogs} />
       </>
     }
