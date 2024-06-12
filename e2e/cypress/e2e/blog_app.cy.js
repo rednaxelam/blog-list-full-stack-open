@@ -1,13 +1,13 @@
 describe('Blog app', function() {
   beforeEach(function() {
-    cy.request('POST', 'http://localhost:3003/api/testing/reset')
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
     const user = {
       username: 'mluukkai',
       password: 'salainen',
       name: 'Bob'
     }
-    cy.request('POST', 'http://localhost:3003/api/users', user)
-    cy.visit('http://localhost:5173')
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
+    cy.visit('')
   })
 
   it('Login form is shown', function() {
@@ -46,12 +46,30 @@ describe('Blog app', function() {
         cy.get('button[type="submit"]').click()
 
         cy.contains('example blog example author')
-        cy.request('GET', 'http://localhost:3003/api/blogs')
+        cy.request('GET', `${Cypress.env('BACKEND')}/blogs`)
           .then(response => {
             const savedblog = response.body[0]
             expect(savedblog.title).to.eql('example blog')
             expect(savedblog.author).to.eql('example author')
           })
+      })
+
+      describe('and a blog exists', function() {
+        beforeEach(function() {
+          cy.createBlog({ title: 'example blog', author: 'example author', url: 'example url', likes: 3})
+        })
+
+        it('A blog can be liked', function () {
+          cy.contains('example blog example author').contains('view').click()
+          cy.contains('likes').find('button').click()
+
+          cy.contains('likes 4')
+          cy.request('GET', `${Cypress.env('BACKEND')}/blogs`)
+          .then(response => {
+            const savedblog = response.body[0]
+            expect(savedblog.likes).to.eql(4)
+          })
+        })
       })
     })
   })
