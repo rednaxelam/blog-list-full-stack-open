@@ -54,7 +54,7 @@ describe('Blog app', function() {
           })
       })
 
-      describe('and a blog exists', function() {
+      describe('and a blog entry by the user exists', function() {
         beforeEach(function() {
           cy.createBlog({ title: 'example blog', author: 'example author', url: 'example url', likes: 3})
         })
@@ -68,6 +68,18 @@ describe('Blog app', function() {
           .then(response => {
             const savedblog = response.body[0]
             expect(savedblog.likes).to.eql(4)
+          })
+        })
+
+        it('A blog can be deleted', function () {
+          cy.contains('example blog example author').contains('view').click()
+          cy.contains('remove').click()
+          // cypress auto accepts confirmations, so don't need to do anything further to remove blog
+          
+          cy.contains('example blog example author').should('not.exist')
+          cy.request('GET', `${Cypress.env('BACKEND')}/blogs`)
+          .then(response => {
+            expect(response.body.length).to.eql(0)
           })
         })
       })
