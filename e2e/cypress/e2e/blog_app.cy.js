@@ -32,5 +32,27 @@ describe('Blog app', function() {
 
       cy.contains('Login Unsuccessful').should('have.css', 'color', 'rgb(255, 0, 0)')
     })
+
+    describe('When logged in', function() {
+      beforeEach(function() {
+        cy.login({ username: 'mluukkai', password: 'salainen' })
+      })
+  
+      it('A blog can be created', function() {
+        cy.contains('add new blog').click()
+        cy.get('#title').type('example blog')
+        cy.get('#author').type('example author')
+        cy.get('#url').type('example url')
+        cy.get('button[type="submit"]').click()
+
+        cy.contains('example blog example author')
+        cy.request('GET', 'http://localhost:3003/api/blogs')
+          .then(response => {
+            const savedblog = response.body[0]
+            expect(savedblog.title).to.eql('example blog')
+            expect(savedblog.author).to.eql('example author')
+          })
+      })
+    })
   })
 })
