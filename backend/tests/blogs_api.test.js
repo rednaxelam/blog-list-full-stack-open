@@ -1,3 +1,8 @@
+// Make sure that the user ids (for blogObjectArray) and tokens are correct before running the tests. Running user api test will mean
+// they need to be updated for the tests to work
+
+// Is there a better way? I'm sure there is, but I'm not implementing it right now
+
 const config = require('../utils/config')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -135,6 +140,7 @@ describe('blog deletion', () => {
     const beforeReturnedBlogListPromise = await api.get('/api/blogs')
     const beforeReturnedBlogList = beforeReturnedBlogListPromise.body
     const returnedBlogToDelete = beforeReturnedBlogList[0]
+    console.log(returnedBlogToDelete)
     await api
       .delete(`/api/blogs/${returnedBlogToDelete.id}`)
       .set('Authorization', `Bearer ${config.TEST_TOKEN_MLUUKKAI}`)
