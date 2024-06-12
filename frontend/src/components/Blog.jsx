@@ -47,7 +47,7 @@ const Blog = ({ blog, setBlogs, setOutcomeMessage, user }) => {
   }
 
   if (showDetailed) {
-    return <div style={blogStyle}>
+    return <div style={blogStyle} className='blog'>
       <p>{blog.title} {blog.author} <button onClick={() => setShowDetailed(false)}>hide</button></p>
       <p>{blog.url}</p>
       <p>likes {blog.likes} <button onClick={() => likeBlog()}>like</button></p>
@@ -55,7 +55,7 @@ const Blog = ({ blog, setBlogs, setOutcomeMessage, user }) => {
       { user.username === blog.user.username ? <p><button onClick={() => deleteBlog()}>remove</button></p> : null}
     </div>
   } else {
-    return <div style={blogStyle}>
+    return <div style={blogStyle} className='blog'>
       <p>{blog.title} {blog.author} <button onClick={() => setShowDetailed(true)}>view</button></p>
     </div>
   }

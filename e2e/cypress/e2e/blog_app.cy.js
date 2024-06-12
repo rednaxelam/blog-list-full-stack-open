@@ -93,6 +93,28 @@ describe('Blog app', function() {
           cy.contains('remove').should('not.exist')
         })
       })
+
+      describe('and multiple blog entries exist', function () {
+        it('blogs are ordered by likes, with the most liked blog being first', function () {
+          cy.createBlog({ title: 'blog 2', author: 'example author', url: 'example url', likes: 2})
+          cy.createBlog({ title: 'blog 0', author: 'example author', url: 'example url', likes: 4})
+          cy.createBlog({ title: 'blog 1', author: 'example author', url: 'example url', likes: 3})
+
+          cy.get('.blog').eq(0).should('contain', 'blog 0')
+          cy.get('.blog').eq(2).should('contain', 'blog 2')
+
+          cy.contains('blog 1 example author').contains('view').click()
+          // the command below assumes that only the like button for blog 1 is visible
+          cy.contains('likes').find('button').click()
+          // wait for a little bit so the click has time to register
+          cy.wait(250)
+          cy.contains('likes').find('button').click()
+          cy.wait(250)
+          
+          cy.get('.blog').eq(0).should('contain', 'blog 1')
+          cy.get('.blog').eq(1).should('contain', 'blog 0')
+        })
+      })
     })
   })
 })
