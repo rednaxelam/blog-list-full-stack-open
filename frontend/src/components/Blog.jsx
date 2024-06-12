@@ -52,7 +52,7 @@ const Blog = ({ blog, setBlogs, setOutcomeMessage, user }) => {
       <p>{blog.url}</p>
       <p>likes {blog.likes} <button onClick={() => likeBlog()}>like</button></p>
       <p>{blog.user.name}</p>
-      <p><button onClick={() => deleteBlog()}>remove</button></p>
+      { user.username === blog.user.username ? <p><button onClick={() => deleteBlog()}>remove</button></p> : null}
     </div>
   } else {
     return <div style={blogStyle}>

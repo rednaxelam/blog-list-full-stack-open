@@ -71,7 +71,7 @@ describe('Blog app', function() {
           })
         })
 
-        it('A blog can be deleted', function () {
+        it('A blog can be deleted by the user who created it', function () {
           cy.contains('example blog example author').contains('view').click()
           cy.contains('remove').click()
           // cypress auto accepts confirmations, so don't need to do anything further to remove blog
@@ -81,6 +81,16 @@ describe('Blog app', function() {
           .then(response => {
             expect(response.body.length).to.eql(0)
           })
+        })
+      })
+
+      describe('and a single blog entry by a different user exists', function () {
+        it('delete button is not visible', function () {
+          cy.createBlog({ title: 'example blog', author: 'example author', url: 'example url', likes: 3})
+          cy.logInToNewUser({ username: 'barry53', password: 'pies', name: 'Barry' })
+
+          cy.contains('example blog example author').contains('view').click()
+          cy.contains('remove').should('not.exist')
         })
       })
     })

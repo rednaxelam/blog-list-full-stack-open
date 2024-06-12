@@ -44,3 +44,11 @@ Cypress.Commands.add('createBlog', ({ title, author, url, likes }) => {
   })
   cy.visit('')
 })
+
+Cypress.Commands.add('logInToNewUser', ({username, password, name}) => {
+  localStorage.removeItem('loggedUser')
+  const user = { username, password, name }
+  cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
+  cy.login({ username, password})
+  cy.visit('')
+})
