@@ -42,3 +42,31 @@ test('URL and likes are shown when button to show details is clicked', async () 
   screen.getByText('567', { exact: false })
   screen.getByText('xyz', { exact: false })
 })
+
+test('If the like button is clicked twice, the corresponding event handler is called twice', async () => {
+  const userDetails = { username: 'example', name: 'xmpl', token: 'tokenUser1' }
+  const blogDetails = {
+    title: 'abc',
+    author: '123',
+    id: 'idblog1',
+    likes: 567,
+    url: 'xyz',
+    user: { username: 'example', name: 'xmpl', id: 'idUser1' }
+  }
+  const setBlogs = jest.fn()
+  const setOutcomeMessage = jest.fn()
+
+  render(
+    <Blog user={userDetails} blog={blogDetails} setBlogs={setBlogs} setOutcomeMessage={setOutcomeMessage}/>
+  )
+
+  const user = userEvent.setup()
+  const showDetailsButton = screen.getByText('view')
+  await user.click(showDetailsButton)
+
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(setBlogs.mock.calls).toHaveLength(2)
+})
