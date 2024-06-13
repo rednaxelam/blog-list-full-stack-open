@@ -1,9 +1,10 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
-test('By default, Blog component renders just the title and author of the blog', () => {
+const renderBlog = () => {
   const user = { username: 'example', name: 'xmpl', token: 'tokenUser1' }
   const blogDetails = {
     title: 'abc',
@@ -19,12 +20,25 @@ test('By default, Blog component renders just the title and author of the blog',
   render(
     <Blog user={user} blog={blogDetails} setBlogs={setBlogs} setOutcomeMessage={setOutcomeMessage}/>
   )
+}
 
-  console.log()
+test('By default, Blog component renders just the title and author of the blog', () => {
+  renderBlog()
 
   screen.getByText('abc', { exact: false })
   screen.getByText('123', { exact: false })
   expect(screen.queryByText('567', { exact: false })).toBeNull()
   expect(screen.queryByText('xyz', { exact: false })).toBeNull()
 
+})
+
+test('URL and likes are shown when button to show details is clicked', async () => {
+  renderBlog()
+
+  const user = userEvent.setup()
+  const showDetailsButton = screen.getByText('view')
+  await user.click(showDetailsButton)
+
+  screen.getByText('567', { exact: false })
+  screen.getByText('xyz', { exact: false })
 })
